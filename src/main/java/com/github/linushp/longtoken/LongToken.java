@@ -1,5 +1,6 @@
 package com.github.linushp.longtoken;
 
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,7 +19,7 @@ public class LongToken {
         StreamingUtils.writeInt(timestamp, byteArrayData, 8);
         StreamingUtils.writeInt(incrementNumber, byteArrayData, 12);
 
-        byte[] md5Sign = toMD5Hash(byteArrayData, secret); // 128位
+        byte[] md5Sign = toHashByteValue(byteArrayData, secret); // 256 位
         byte[] byteArrayAll = mergeByteArray(md5Sign, byteArrayData);
         return Base58.encode(byteArrayAll);
     }
@@ -26,12 +27,13 @@ public class LongToken {
 
     public static long parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
         byte[] byteArrayAll = Base58.decode(tokenString);
-        byte[] md5Sign1 = new byte[16];
+        byte[] md5Sign1 = new byte[32];
         byte[] byteArrayData = new byte[16];
 
-        System.arraycopy(byteArrayAll, 0, md5Sign1, 0, 16);
-        System.arraycopy(byteArrayAll, 16, byteArrayData, 0, 16);
-        byte[] md5Sign2 = toMD5Hash(byteArrayData, secret); // 128位
+        System.arraycopy(byteArrayAll, 0, md5Sign1, 0, 32);
+        System.arraycopy(byteArrayAll, 32, byteArrayData, 0, 16);
+
+        byte[] md5Sign2 = toHashByteValue(byteArrayData, secret); // 128位
         if (!isEqualByteArray(md5Sign1, md5Sign2)) {
             throw new LongTokenException("ValidateSignFailed"); //签名验证失败
         }
@@ -46,12 +48,12 @@ public class LongToken {
         return value;
     }
 
-
+//
 //    public static void main(String[] args) throws Exception {
 //        byte[] secret = "hello".getBytes();
-//        String token = toLongToken(122176587, secret);
+//        String token = toLongToken(-122176587, secret);
 //        System.out.println(token);
-//        long value = parseLongToken(token, "hello".getBytes(), 2);
+//        long value = parseLongToken(token, "hello1".getBytes(), 2);
 //        System.out.println(value);
 //    }
 
@@ -71,11 +73,9 @@ public class LongToken {
     }
 
 
-    private static byte[] toMD5Hash(byte[] byteArray, byte[] secretByteArray) throws NoSuchAlgorithmException {
-
+    private static byte[] toHashByteValue(byte[] byteArray, byte[] secretByteArray) throws NoSuchAlgorithmException {
         byte[] xxx = mergeByteArray(byteArray, secretByteArray);
-
-        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         messageDigest.update(xxx);
         return messageDigest.digest();
     }
