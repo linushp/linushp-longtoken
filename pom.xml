@@ -6,7 +6,7 @@
 
     <groupId>com.github.linushp</groupId>
     <artifactId>longtoken</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <name>linushp-longtoken</name>
     <description>java common tools</description>
     <url>https://github.com/linushp/linushp-longtoken</url>

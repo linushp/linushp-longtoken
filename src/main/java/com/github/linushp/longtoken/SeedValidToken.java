@@ -24,7 +24,7 @@ public class SeedValidToken {
 
 //    public static void main(String[] args) throws Exception {
 //        byte[] secret = "dafnsk".getBytes();
-//        String seed = "";
+//        String seed = "23233223";
 //        String sss = toSeedToken(seed, secret);
 //        System.out.println(sss);
 //        boolean xxxx = validateSeedToken(sss, seed, secret, 2);

@@ -20,13 +20,17 @@ public class LongToken {
         StreamingUtils.writeInt(incrementNumber, byteArrayData, 12);
 
         byte[] md5Sign = toHashByteValue(byteArrayData, secret); // 256 位
-        byte[] byteArrayAll = mergeByteArray(md5Sign, byteArrayData);
+
+        byte[] byteArrayAll = mergeByteArray(md5Sign, byteArrayData);//256 + 128
+        byteArrayAll = EncryptUtils.xorSecret(byteArrayAll, secret);
         return Base58.encode(byteArrayAll);
     }
 
 
     public static long parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
         byte[] byteArrayAll = Base58.decode(tokenString);
+        byteArrayAll = EncryptUtils.xorSecret(byteArrayAll, secret);
+
         byte[] md5Sign1 = new byte[32];
         byte[] byteArrayData = new byte[16];
 
@@ -48,13 +52,19 @@ public class LongToken {
         return value;
     }
 
-//
+////
 //    public static void main(String[] args) throws Exception {
-//        byte[] secret = "hello".getBytes();
-//        String token = toLongToken(-122176587, secret);
-//        System.out.println(token);
-//        long value = parseLongToken(token, "hello1".getBytes(), 2);
-//        System.out.println(value);
+//
+//        System.out.println(System.currentTimeMillis());
+//        for (int i = 0; i < 1000; i++) {
+//            byte[] secret = "hello".getBytes();
+//            String token = toLongToken(i, secret);
+//            System.out.println(token);
+//            long value = parseLongToken(token, "hello".getBytes(), 2);
+//            System.out.println(value);
+//        }
+//        System.out.println(System.currentTimeMillis());
+//
 //    }
 
 
