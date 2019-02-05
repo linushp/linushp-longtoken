@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 
 class EncryptUtils {
 
+    private static final int START_COUNT = 8;
 
     static byte[] exchangeSecret(byte[] bytesObj, byte[] secret) throws NoSuchAlgorithmException {
         int bytesObjLength = bytesObj.length;
@@ -12,9 +13,9 @@ class EncryptUtils {
         int secretHashLength = secretHash.length;
         byte[] result = new byte[bytesObjLength];
         System.arraycopy(bytesObj, 0, result, 0, bytesObjLength);
-        for (int i = 0; i < bytesObjLength; i++) {
-            int secretByte = Math.abs(secretHash[i % secretHashLength]) % bytesObjLength;
-            swapByteAB(result, i, secretByte);
+        for (int i = START_COUNT; i < bytesObjLength; i++) {
+            int secretByte = Math.abs(secretHash[i % secretHashLength]) % (bytesObjLength - START_COUNT);
+            swapByteAB(result, i, secretByte + START_COUNT);
         }
         return result;
     }
@@ -26,9 +27,9 @@ class EncryptUtils {
         int secretHashLength = secretHash.length;
         byte[] result = new byte[bytesObjLength];
         System.arraycopy(bytesObj, 0, result, 0, bytesObjLength);
-        for (int i = bytesObjLength - 1; i >= 0; i--) {
-            int secretByte = Math.abs(secretHash[i % secretHashLength]) % bytesObjLength;
-            swapByteAB(result, i, secretByte);
+        for (int i = bytesObjLength - 1; i >= START_COUNT; i--) {
+            int secretByte = Math.abs(secretHash[i % secretHashLength]) % (bytesObjLength - START_COUNT);
+            swapByteAB(result, i, secretByte + START_COUNT);
         }
         return result;
     }
