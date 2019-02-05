@@ -19,26 +19,26 @@ public class LongToken {
         StreamingUtils.writeInt(timestamp, byteArrayData, 8);
         StreamingUtils.writeInt(incrementNumber, byteArrayData, 12);
 
-        byte[] md5Sign = toHashByteValue(byteArrayData, secret); // 256 位
+        byte[] hashSign = toHashByteValue(byteArrayData, secret); // 256 位
 
-        byte[] byteArrayAll = mergeByteArray(md5Sign, byteArrayData);//256 + 128
-        byteArrayAll = EncryptUtils.xorSecret(byteArrayAll, secret);
+        byte[] byteArrayAll = mergeByteArray(hashSign, byteArrayData);//256 + 128
+        byteArrayAll = EncryptUtils.exchangeSecret(byteArrayAll, secret);
         return Base58.encode(byteArrayAll);
     }
 
 
     public static long parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
         byte[] byteArrayAll = Base58.decode(tokenString);
-        byteArrayAll = EncryptUtils.xorSecret(byteArrayAll, secret);
+        byteArrayAll = EncryptUtils.exchangeSecret2(byteArrayAll, secret);
 
-        byte[] md5Sign1 = new byte[32];
+        byte[] hashSign = new byte[32];
         byte[] byteArrayData = new byte[16];
 
-        System.arraycopy(byteArrayAll, 0, md5Sign1, 0, 32);
+        System.arraycopy(byteArrayAll, 0, hashSign, 0, 32);
         System.arraycopy(byteArrayAll, 32, byteArrayData, 0, 16);
 
-        byte[] md5Sign2 = toHashByteValue(byteArrayData, secret); // 128位
-        if (!isEqualByteArray(md5Sign1, md5Sign2)) {
+        byte[] hashSign2 = toHashByteValue(byteArrayData, secret); // 128位
+        if (!isEqualByteArray(hashSign, hashSign2)) {
             throw new LongTokenException("ValidateSignFailed"); //签名验证失败
         }
 
@@ -52,11 +52,11 @@ public class LongToken {
         return value;
     }
 
-////
+
 //    public static void main(String[] args) throws Exception {
 //
 //        System.out.println(System.currentTimeMillis());
-//        for (int i = 0; i < 1000; i++) {
+//        for (int i = 99990; i < 100000; i++) {
 //            byte[] secret = "hello".getBytes();
 //            String token = toLongToken(i, secret);
 //            System.out.println(token);

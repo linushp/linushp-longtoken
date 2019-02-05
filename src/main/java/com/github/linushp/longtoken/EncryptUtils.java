@@ -5,20 +5,40 @@ import java.security.NoSuchAlgorithmException;
 
 class EncryptUtils {
 
-    /**
-     * 通过异或实现的简单加密
-     */
-    static byte[] xorSecret(byte[] bytesObj, byte[] secret) throws NoSuchAlgorithmException {
+
+    static byte[] exchangeSecret(byte[] bytesObj, byte[] secret) throws NoSuchAlgorithmException {
+        int bytesObjLength = bytesObj.length;
         byte[] secretHash = toHashByteValue(secret);
-        byte[] result = new byte[bytesObj.length];
-        for (int i = 0; i < bytesObj.length; i++) {
-            byte originByte = bytesObj[i];
-            byte secretByte = secretHash[i % secretHash.length];
-            result[i] = (byte) (originByte ^ secretByte);
+        int secretHashLength = secretHash.length;
+        byte[] result = new byte[bytesObjLength];
+        System.arraycopy(bytesObj, 0, result, 0, bytesObjLength);
+        for (int i = 0; i < bytesObjLength; i++) {
+            int secretByte = Math.abs(secretHash[i % secretHashLength]) % bytesObjLength;
+            swapByteAB(result, i, secretByte);
         }
         return result;
     }
 
+
+    static byte[] exchangeSecret2(byte[] bytesObj, byte[] secret) throws NoSuchAlgorithmException {
+        int bytesObjLength = bytesObj.length;
+        byte[] secretHash = toHashByteValue(secret);
+        int secretHashLength = secretHash.length;
+        byte[] result = new byte[bytesObjLength];
+        System.arraycopy(bytesObj, 0, result, 0, bytesObjLength);
+        for (int i = bytesObjLength - 1; i >= 0; i--) {
+            int secretByte = Math.abs(secretHash[i % secretHashLength]) % bytesObjLength;
+            swapByteAB(result, i, secretByte);
+        }
+        return result;
+    }
+
+
+    private static void swapByteAB(byte[] bytes, int i, int j) {
+        byte c = bytes[i];
+        bytes[i] = bytes[j];
+        bytes[j] = c;
+    }
 
     private static byte[] toHashByteValue(byte[] secretByteArray) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
