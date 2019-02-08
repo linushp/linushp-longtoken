@@ -54,7 +54,7 @@ public class LongToken {
         if (!isEqualByteArray(hashSign, hashSign2)) {
             tokenValue.setErrCode(1);
             tokenValue.setErrMsg("ValidateSignFailed");
-        } else if (signSecond + active_second < nowSecond) {
+        } else if (signSecond != 0 && (signSecond + active_second < nowSecond)) {
             tokenValue.setErrCode(2);
             tokenValue.setErrMsg("LongTokenExpired");
         }
