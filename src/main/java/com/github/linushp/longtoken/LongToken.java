@@ -63,20 +63,20 @@ public class LongToken {
     }
 
 
-    public static void main(String[] args) throws Exception {
-
-        System.out.println(System.currentTimeMillis());
-        for (int i = 99990; i < 100000; i++) {
-            byte[] secret = "hello".getBytes();
-            String token = toLongToken(i, secret);
-            System.out.println(token);
-//            Thread.sleep(1000 * 2);
-            TokenValue parsedValue = parseLongToken(token, "hello".getBytes(), 1);
-            System.out.println(parsedValue.toString());
-        }
-        System.out.println(System.currentTimeMillis());
-
-    }
+//    public static void main(String[] args) throws Exception {
+//
+//        System.out.println(System.currentTimeMillis());
+//        for (int i = 99990; i < 100000; i++) {
+//            byte[] secret = "hello".getBytes();
+//            String token = toLongToken(i, secret);
+//            System.out.println(token);
+////            Thread.sleep(1000 * 2);
+//            TokenValue parsedValue = parseLongToken(token, "hello".getBytes(), 1);
+//            System.out.println(parsedValue.toString());
+//        }
+//        System.out.println(System.currentTimeMillis());
+//
+//    }
 
 
     private static boolean isEqualByteArray(byte[] bytes1, byte[] bytes2) {
