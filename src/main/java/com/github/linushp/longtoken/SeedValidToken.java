@@ -11,14 +11,14 @@ public class SeedValidToken {
     }
 
     public static boolean validateSeedToken(String token, String seed, byte[] secret, int active_second) throws Exception {
-        long longSeed;
+        ParsedValue parsedValue;
         try {
-            longSeed = LongToken.parseLongToken(token, secret, active_second);
+            parsedValue = LongToken.parseLongToken(token, secret, active_second);
         } catch (LongTokenException e) {
             return false;
         }
         long longSeed2 = hashSeedToLong(seed);
-        return longSeed == longSeed2;
+        return parsedValue.getLongValue() == longSeed2;
     }
 
 

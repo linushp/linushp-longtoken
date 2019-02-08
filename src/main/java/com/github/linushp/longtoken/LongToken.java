@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LongToken {
 
-    private static AtomicInteger atomicInteger = new AtomicInteger(1);
+    private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
     public static String toLongToken(long value, byte[] secret) throws NoSuchAlgorithmException {
         int timestamp = (int) (System.currentTimeMillis() / 1000);
@@ -27,7 +27,7 @@ public class LongToken {
     }
 
 
-    public static long parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
+    public static ParsedValue parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
         byte[] byteArrayAll = Base58.decode(tokenString);
         byteArrayAll = EncryptUtils.exchangeSecret2(byteArrayAll, secret);
 
@@ -44,12 +44,13 @@ public class LongToken {
 
         long value = StreamingUtils.readLong(byteArrayData, 0);
         int signSecond = StreamingUtils.readInt(byteArrayData, 8);
+        int incNum = StreamingUtils.readInt(byteArrayData, 12);
         int nowSecond = (int) (System.currentTimeMillis() / 1000);
 
         if (signSecond + active_second < nowSecond) {
             throw new LongTokenException("LongTokenExpired"); //token已经过期
         }
-        return value;
+        return new ParsedValue(value,signSecond,incNum);
     }
 
 
@@ -60,8 +61,8 @@ public class LongToken {
 //            byte[] secret = "hello".getBytes();
 //            String token = toLongToken(i, secret);
 //            System.out.println(token);
-//            long value = parseLongToken(token, "hello".getBytes(), 2);
-//            System.out.println(value);
+//            ParsedValue parsedValue = parseLongToken(token, "hello".getBytes(), 2);
+//            System.out.println(parsedValue.toString());
 //        }
 //        System.out.println(System.currentTimeMillis());
 //
