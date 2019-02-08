@@ -10,13 +10,13 @@ public class SeedValidToken {
         return LongToken.toLongToken(longSeed, secret);
     }
 
-    public static boolean validateSeedToken(String token, String seed, byte[] secret, int active_second) throws Exception {
-        TokenValue parsedValue;
-        try {
-            parsedValue = LongToken.parseLongToken(token, secret, active_second);
-        } catch (LongTokenException e) {
+
+    public static boolean validateSeedToken(String token, String seed, byte[] secret, int active_second) throws NoSuchAlgorithmException {
+        TokenValue parsedValue = LongToken.parseLongToken(token, secret, active_second);
+        if (parsedValue.getErrCode() != 0) {
             return false;
         }
+
         long longSeed2 = hashSeedToLong(seed);
         return parsedValue.getLongValue() == longSeed2;
     }

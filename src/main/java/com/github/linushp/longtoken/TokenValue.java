@@ -4,6 +4,8 @@ public class TokenValue {
     private long longValue;
     private int signSecond;
     private int incNum;
+    private int errCode = 0;
+    private String errMsg = null;
 
     public TokenValue(long longValue, int signSecond, int incNum) {
         this.longValue = longValue;
@@ -35,12 +37,30 @@ public class TokenValue {
         this.incNum = incNum;
     }
 
+    public int getErrCode() {
+        return errCode;
+    }
+
+    public void setErrCode(int errCode) {
+        this.errCode = errCode;
+    }
+
+    public String getErrMsg() {
+        return errMsg;
+    }
+
+    public void setErrMsg(String errMsg) {
+        this.errMsg = errMsg;
+    }
+
     @Override
     public String toString() {
-        return "ParsedValue{" +
+        return "TokenValue{" +
                 "longValue=" + longValue +
                 ", signSecond=" + signSecond +
                 ", incNum=" + incNum +
+                ", errCode=" + errCode +
+                ", errMsg='" + errMsg + '\'' +
                 '}';
     }
 }

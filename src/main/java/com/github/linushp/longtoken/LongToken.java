@@ -31,7 +31,7 @@ public class LongToken {
     }
 
 
-    public static TokenValue parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
+    public static TokenValue parseLongToken(String tokenString, byte[] secret, int active_second) throws NoSuchAlgorithmException {
         byte[] byteArrayAll = Base58.decode(tokenString);
         byteArrayAll = EncryptUtils.exchangeSecret2(byteArrayAll, secret);
 
@@ -41,36 +41,42 @@ public class LongToken {
         System.arraycopy(byteArrayAll, 0, hashSign, 0, 32);
         System.arraycopy(byteArrayAll, 32, byteArrayData, 0, 16);
 
-        byte[] hashSign2 = toHashByteValue(byteArrayData, secret); // 128位
-        if (!isEqualByteArray(hashSign, hashSign2)) {
-            throw new LongTokenException("ValidateSignFailed"); //签名验证失败
-        }
-
-        long value = StreamingUtils.readLong(byteArrayData, 0);
+        long longValue = StreamingUtils.readLong(byteArrayData, 0);
         int signSecond = StreamingUtils.readInt(byteArrayData, 8);
         int incNum = StreamingUtils.readInt(byteArrayData, 12);
+
         int nowSecond = (int) (System.currentTimeMillis() / 1000);
 
-        if (signSecond + active_second < nowSecond) {
-            throw new LongTokenException("LongTokenExpired"); //token已经过期
+        byte[] hashSign2 = toHashByteValue(byteArrayData, secret); // 128位
+
+        TokenValue tokenValue = new TokenValue(longValue, signSecond, incNum);
+
+        if (!isEqualByteArray(hashSign, hashSign2)) {
+            tokenValue.setErrCode(1);
+            tokenValue.setErrMsg("ValidateSignFailed");
+        } else if (signSecond + active_second < nowSecond) {
+            tokenValue.setErrCode(2);
+            tokenValue.setErrMsg("LongTokenExpired");
         }
-        return new TokenValue(value, signSecond, incNum);
+
+        return tokenValue;
     }
 
 
-//    public static void main(String[] args) throws Exception {
-//
-//        System.out.println(System.currentTimeMillis());
-//        for (int i = 99990; i < 100000; i++) {
-//            byte[] secret = "hello".getBytes();
-//            String token = toLongToken(i, secret);
-//            System.out.println(token);
-//            TokenValue parsedValue = parseLongToken(token, "hello".getBytes(), 2);
-//            System.out.println(parsedValue.toString());
-//        }
-//        System.out.println(System.currentTimeMillis());
-//
-//    }
+    public static void main(String[] args) throws Exception {
+
+        System.out.println(System.currentTimeMillis());
+        for (int i = 99990; i < 100000; i++) {
+            byte[] secret = "hello".getBytes();
+            String token = toLongToken(i, secret);
+            System.out.println(token);
+//            Thread.sleep(1000 * 2);
+            TokenValue parsedValue = parseLongToken(token, "hello".getBytes(), 1);
+            System.out.println(parsedValue.toString());
+        }
+        System.out.println(System.currentTimeMillis());
+
+    }
 
 
     private static boolean isEqualByteArray(byte[] bytes1, byte[] bytes2) {
