@@ -11,7 +11,7 @@ public class SeedValidToken {
     }
 
     public static boolean validateSeedToken(String token, String seed, byte[] secret, int active_second) throws Exception {
-        ParsedValue parsedValue;
+        TokenValue parsedValue;
         try {
             parsedValue = LongToken.parseLongToken(token, secret, active_second);
         } catch (LongTokenException e) {

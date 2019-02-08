@@ -1,13 +1,11 @@
 package com.github.linushp.longtoken;
 
-import java.util.Objects;
-
-public class ParsedValue {
+public class TokenValue {
     private long longValue;
     private int signSecond;
     private int incNum;
 
-    public ParsedValue(long longValue, int signSecond, int incNum) {
+    public TokenValue(long longValue, int signSecond, int incNum) {
         this.longValue = longValue;
         this.signSecond = signSecond;
         this.incNum = incNum;

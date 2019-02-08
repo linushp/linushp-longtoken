@@ -9,15 +9,19 @@ public class LongToken {
 
     private static AtomicInteger atomicInteger = new AtomicInteger(0);
 
-    public static String toLongToken(long value, byte[] secret) throws NoSuchAlgorithmException {
-        int timestamp = (int) (System.currentTimeMillis() / 1000);
-        int incrementNumber = atomicInteger.incrementAndGet();
+    public static String toLongToken(long longValue, byte[] secret) throws NoSuchAlgorithmException {
+        int signSecond = (int) (System.currentTimeMillis() / 1000);
+        int incNum = atomicInteger.incrementAndGet();
+        TokenValue tokenValue = new TokenValue(longValue, signSecond, incNum);
+        return toLongToken(tokenValue, secret);
+    }
 
+
+    public static String toLongToken(TokenValue tokenValue, byte[] secret) throws NoSuchAlgorithmException {
         byte[] byteArrayData = new byte[16];
-
-        StreamingUtils.writeLong(value, byteArrayData, 0);
-        StreamingUtils.writeInt(timestamp, byteArrayData, 8);
-        StreamingUtils.writeInt(incrementNumber, byteArrayData, 12);
+        StreamingUtils.writeLong(tokenValue.getLongValue(), byteArrayData, 0);
+        StreamingUtils.writeInt(tokenValue.getSignSecond(), byteArrayData, 8);
+        StreamingUtils.writeInt(tokenValue.getIncNum(), byteArrayData, 12);
 
         byte[] hashSign = toHashByteValue(byteArrayData, secret); // 256 位
 
@@ -27,7 +31,7 @@ public class LongToken {
     }
 
 
-    public static ParsedValue parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
+    public static TokenValue parseLongToken(String tokenString, byte[] secret, int active_second) throws Exception {
         byte[] byteArrayAll = Base58.decode(tokenString);
         byteArrayAll = EncryptUtils.exchangeSecret2(byteArrayAll, secret);
 
@@ -50,7 +54,7 @@ public class LongToken {
         if (signSecond + active_second < nowSecond) {
             throw new LongTokenException("LongTokenExpired"); //token已经过期
         }
-        return new ParsedValue(value,signSecond,incNum);
+        return new TokenValue(value, signSecond, incNum);
     }
 
 
@@ -61,7 +65,7 @@ public class LongToken {
 //            byte[] secret = "hello".getBytes();
 //            String token = toLongToken(i, secret);
 //            System.out.println(token);
-//            ParsedValue parsedValue = parseLongToken(token, "hello".getBytes(), 2);
+//            TokenValue parsedValue = parseLongToken(token, "hello".getBytes(), 2);
 //            System.out.println(parsedValue.toString());
 //        }
 //        System.out.println(System.currentTimeMillis());
